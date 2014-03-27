@@ -10,6 +10,9 @@ app.get('/', function(req, res) {
 app.get('/paper.js', function(req, res) {
   res.sendfile('/usr/paper-core.min.js', {root:__dirname});
 });
+app.get('/cc.js', function(req, res) {
+  res.sendfile('/usr/cc.js', {root:__dirname});
+});
 var port = Number(process.env.PORT || 5000);
 app.listen(port, function() {
   console.log("Listening on " + port);
