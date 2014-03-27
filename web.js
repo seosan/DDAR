@@ -7,7 +7,7 @@ app.use(logfmt.requestLogger());
 app.get('/', function(req, res) {
   res.sendfile('/usr/index.html', {root:__dirname});
 });
-app.get('/usr/paper.js', function(req, res) {
+app.get('/usr/paper-core.min.js', function(req, res) {
   res.sendfile('/usr/paper-core.min.js', {root:__dirname});
 });
 app.get('/usr/cc.js', function(req, res) {
