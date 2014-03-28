@@ -1,5 +1,6 @@
-#maincanvas {
-	position: absolute;
-	left:0;
-	right:0;
+#maincanvas, canvas {
+	width: 800px;
+	height: 600px;
+	position: relative;
+	margin : 0px auto;
 }
