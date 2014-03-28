@@ -10,8 +10,11 @@ app.get('/', function(req, res) {
 app.get('/usr/paper-core.min.js', function(req, res) {
   res.sendfile('/usr/paper-core.min.js', {root:__dirname});
 });
-app.get('/usr/cc.js', function(req, res) {
-  res.sendfile('/usr/cc.js', {root:__dirname});
+app.get('/usr/jcanvas.js', function(req, res) {
+  res.sendfile('/usr/jcanvas.js', {root:__dirname});
+});
+app.get('/usr/script.js', function(req, res) {
+  res.sendfile('/usr/script.js', {root:__dirname});
 });
 var port = Number(process.env.PORT || 5000);
 app.listen(port, function() {
