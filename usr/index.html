@@ -1,23 +1,32 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
-<head>
-<!-- Load the Paper.js library -->
-<script type="text/javascript" src="paper.js"></script>
-<!-- Define inlined PaperScript associate it with myCanvas -->
-<script type="text/paperscript" canvas="myCanvas">
-	// Create a Paper.js Path to draw a line into it:
-	var path = new Path();
-	// Give the stroke a color
-	path.strokeColor = 'black';
-	var start = new Point(100, 100);
-	// Move to start and draw a line from there
-	path.moveTo(start);
-	// Note the plus operator on Point objects.
-	// PaperScript does that for us, and much more!
-	path.lineTo(start + [ 100, -50 ]);
-</script>
-</head>
-<body>
-	<canvas id="myCanvas" resize></canvas>
-</body>
+	<head>
+		<title>Dirty Disgusting Ameba Running-World
+		</title>
+		<script type="text/javascript" src="/usr/paper-full.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+		<script src="https://code.jquery.com/color/jquery.color-2.1.0.min.js"></script>
+		<script src="/usr/jcanvas.js"></script>
+		<script type="text/paperscript" canvas="canvas2">
+			var path = new Path();               // Path 객체 생성
+
+		     path.strokeColor = 'red';            // 선 색 지정
+		     path.add(new Point(500, 500));   // 좌표 추가 (시작 위치)
+		     path.add(new Point(600, 650));   // 좌표 추가 (다음 위치)
+	
+		</script>
+	</head>
+	<body>
+		<div id="maincanvas">
+			<canvas width="800px" height="600px" id="canvas">당신의 더럽고 역겨운 구식 브라우저가 표준 신문물인 Canvas 기능을 지원하지 않습니다</canvas>
+		</div>
+		<br>
+		<b>Dirty Disgusting Ameba Running-World</b>
+		<div id="cnv">
+			<canvas width="800px" height="600px" id="canvas2" resize="true">당신의 더럽고 역겨운 구식 브라우저가 표준 신문물인 Canvas 기능을 지원하지 않습니다</canvas>
+		</div>
+		<script type="text/javascript" src="/usr/script.js"></script>
+		
+		<link rel="stylesheet" type-"text/css" href="/usr/style.css" />
+	</body>
 </html>
