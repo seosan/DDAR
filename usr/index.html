@@ -3,30 +3,316 @@
 	<head>
 		<title>Dirty Disgusting Ameba Running-World
 		</title>
+	</head>
 		<script type="text/javascript" src="/usr/paper-full.min.js"></script>
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 		<script src="https://code.jquery.com/color/jquery.color-2.1.0.min.js"></script>
 		<script src="/usr/jcanvas.js"></script>
-		<script type="text/paperscript" canvas="canvas2">
-			var path = new Path();               // Path 객체 생성
+		<script type="text/paperscript" canvas="canvas">
+		
+		var ballspeed = 8;
+			function Ball(r, p, v, a) {
+				this.radius = r;
+				this.point = p;
+				this.vector = v;
+				this.maxVec = ballspeed;
+				this.numSegment = Math.floor(r / 3 + 2);
+				this.boundOffset = [];
+				this.boundOffsetBuff = [];
+				this.sidePoints = [];
+				if(!a) this.path = new Path({
+					fillColor: {
+						hue: '80',
+						saturation: 1,
+						brightness: 1
+					},
+					blendMode: 'screen'
+				});
+				else this.path = new Path({
+					fillColor: {
+						hue: '0',
+						saturation: 1,
+						brightness: 1
+					},
+					blendMode: 'screen'
+				});
 
-		     path.strokeColor = 'red';            // 선 색 지정
-		     path.add(new Point(500, 500));   // 좌표 추가 (시작 위치)
-		     path.add(new Point(600, 650));   // 좌표 추가 (다음 위치)
+	for (var i = 0; i < this.numSegment; i ++) {
+		this.boundOffset.push(this.radius);
+		this.boundOffsetBuff.push(this.radius);
+		this.path.add(new Point());
+		this.sidePoints.push(new Point({
+			angle: 360 / this.numSegment * i,
+			length: 1
+		}));
+	}	
+}	
+
+Ball.prototype = {
+	iterate: function() {
+		this.checkBorders();
+		if (this.vector.length > this.maxVec)
+			this.vector.length = this.maxVec;
+		this.point += this.vector;
+		this.updateShape();
+	},
+
+	checkBorders: function() {
+		var size = view.size;
+		if (this.point.x < -this.radius)
+			this.point.x = size.width + this.radius;
+		if (this.point.x > size.width + this.radius)
+			this.point.x = -this.radius;
+		if (this.point.y < -this.radius)
+			this.point.y = size.height + this.radius;
+		if (this.point.y > size.height + this.radius)
+			this.point.y = -this.radius;
+	},
+
+	updateShape: function() {
+		var segments = this.path.segments;
+		for (var i = 0; i < this.numSegment; i ++)
+			segments[i].point = this.getSidePoint(i);
+
+		this.path.smooth();
+		for (var i = 0; i < this.numSegment; i ++) {
+			if (this.boundOffset[i] < this.radius / 4)
+				this.boundOffset[i] = this.radius / 4;
+			var next = (i + 1) % this.numSegment;
+			var prev = (i > 0) ? i - 1 : this.numSegment - 1;
+			var offset = this.boundOffset[i];
+			offset += (this.radius - offset) / 15;
+			offset += ((this.boundOffset[next] + this.boundOffset[prev]) / 2 - offset) / 3;
+			this.boundOffsetBuff[i] = this.boundOffset[i] = offset;
+		}
+	},
+
+	react: function(b) {
+		var dist = this.point.getDistance(b.point);
+		if (dist < this.radius + b.radius && dist != 0) {
+			var overlap = this.radius + b.radius - dist;
+			var direc = (this.point - b.point).normalize(overlap * 0.015);
+			this.vector += direc;
+			b.vector -= direc;
+
+			this.calcBounds(b);
+			b.calcBounds(this);
+			this.updateBounds();
+			b.updateBounds();
+		}
+	},
+
+	getBoundOffset: function(b) {
+		var diff = this.point - b;
+		var angle = (diff.angle + 180) % 360;
+		return this.boundOffset[Math.floor(angle / 360 * this.boundOffset.length)];
+	},
+
+	calcBounds: function(b) {
+		for (var i = 0; i < this.numSegment; i ++) {
+			var tp = this.getSidePoint(i);
+			var bLen = b.getBoundOffset(tp);
+			var td = tp.getDistance(b.point);
+			if (td < bLen) {
+				this.boundOffsetBuff[i] -= (bLen  - td) / 2;
+			}
+		}
+	},
+
+	getSidePoint: function(index) {
+		return this.point + this.sidePoints[index] * this.boundOffset[index];
+	},
+
+	updateBounds: function() {
+		for (var i = 0; i < this.numSegment; i ++)
+			this.boundOffset[i] = this.boundOffsetBuff[i];
+	}
+};
+
+//--------------------- main ---------------------
+var menustart = 0;
+var gamestart = 0;
+var menuslide = 200;
+var maintext = new PointText;
+var menutext = new Array();
+var menuselector;
+var selectvalue = 0;
+var bgfilter;
+var fl = 0;
+var balls = [];
+var numBalls = 50;
+var tm_mainmenu = setInterval(mainmenu, 1500);
+
+var bgmain = new Path.Rectangle(0, 0, 800, 600);
+	bgmain.fillColor = '#042F00';
+
+var tm_fl = setInterval(flash, 400);
 	
+for (var i = 0; i < numBalls-1; i++) {
+	var position = Point.random() * view.size;
+	var vector = new Point({
+		angle: 0,
+		length: Math.random() * 10
+	});
+	var radius = Math.random() * 20 + 30;
+	balls.push(new Ball(radius, position, vector, false));
+}
+
+
+
+
+	function flash() {
+	fl = !fl;
+}
+function onKeyDown(e) {	
+	if(menustart) {
+		if (e.key == 'down' & selectvalue<2) {
+			selectvalue++;
+			clearInterval(tm_fl);
+			fl = true;
+			tm_fl = setInterval(flash, 400);
+		}
+		if (e.key == 'up' & selectvalue>0) {
+			selectvalue--;
+			clearInterval(tm_fl);
+			fl = true;
+			tm_fl = setInterval(flash, 400);
+		}
+		if (e.key == 'enter') {
+			if (selectvalue == 0) {
+				maingame();
+				clearInterval(tm_fl);
+			}
+		}
+	}
+	if(gamestart) {
+		if (e.key == 'down') {
+			balls[numBalls].v.angle = 270;
+			balls[numBalls].v.length = 8;
+		}
+		if (e.key == 'up') {
+			balls[numBalls].v.angle = 90;
+			balls[numBalls].v.length = 8;
+		}
+	}
+}
+
+function onFrame() {
+	for (var i = 0; i < balls.length - 1; i++) {
+			for (var j = i + 1; j < balls.length; j++) {
+				balls[i].react(balls[j]);
+			}
+		}
+	for (var i = 0, l = balls.length; i < l; i++) {
+		balls[i].iterate();
+	}
+	if(!gamestart) {
+		if (menustart) {
+			console.log("menustart");
+			
+			maintext.point = [100, 120-menuslide];
+			menutext[0].point = [550+menuslide, 300];
+			menutext[1].point = [550+menuslide, 350];
+			menutext[2].point = [550+menuslide, 400];
+			menuselector.position = [510+menuslide, 290+selectvalue*50];
+			menuselector.opacity = fl;
+
+			if(menuslide>0) {
+				bgfilter.opacity += menuslide/4000;
+			}
+		}
+		
+	}
+}
+function mainmenu() {
+	if(!menustart) {
+		bgfilter = new Path.Rectangle(0, 0, 800, 600);
+		bgfilter.fillColor = 'black';
+		bgfilter.opacity = 0;
+		maintext = new PointText({
+			point: [100, 0],
+			content: 'Dirty Disgusting\nAmeba Running-world',
+			fillColor: '#6BEE00',
+			fontFamily: 'buggedbit',
+			fontSize: '40px',
+			justificaton: 'center'
+		});
+		menuselector = new Path.Rectangle( {
+			point : [510, 300],
+			size : [20, 20],
+			fillColor: '#6BEE00'
+		});
+
+
+		menutext[0] = new PointText({
+			point: [550, 300],
+			content: 'Start',
+			fillColor: '#6BEE00',
+			fontFamily: 'buggedbit',
+			fontSize: '30px',
+			justificaton: 'left'
+		});
+
+		menutext[1] = new PointText({
+			point: [550, 350],
+			content: 'Fuck',
+			fillColor: '#6BEE00',
+			fontFamily: 'buggedbit',
+			fontSize: '30px',
+			justificaton: 'left'
+		});
+
+		menutext[2] = new PointText({
+			point: [550, 400],
+			content: 'Shit',
+			fillColor: '#6BEE00',
+			fontFamily: 'buggedbit',
+			fontSize: '30px',
+			justificaton: 'left'
+		});
+
+		clearInterval(mainmenu);
+		setInterval(mainmenu, 20);
+		console.log("mainmenu");
+		menustart = 1;
+	}
+	if (menuslide>0) { menuslide -= (menuslide)/10; }
+	if (menuslide<0) { clearInterval(mainmenu); }
+}
+function maingame() {
+	if (!gamestart) {
+		balls = [];
+		gamestart = true;
+		ballspeed = 5;
+		var bgmain2 = new Path.Rectangle(0, 0, 800, 600);
+		bgmain2.fillColor = '#042F00';
+		for (var i = 0; i < numBalls; i++) {
+			var position = Point.random() * view.size;
+			var vector = new Point({
+				angle: 360 * Math.random(),
+				length: Math.random() * 10
+			});
+			var radius = Math.random() * 20 + 30;
+			balls.push(new Ball(radius, position, vector,false));
+		}
+
+		var pPosition = new Point(200, 300);
+		var pVector = new Point({
+			angle: 123,
+			length: 2
+		});
+		var pRadius = 40;
+		balls.push(new Ball(pRadius, pPosition, pVector, true));
+	}
+}
+
 		</script>
-	</head>
 	<body>
+		<link rel="stylesheet" type-"text/css" href="/usr/style.css" />
 		<div id="maincanvas">
 			<canvas width="800px" height="600px" id="canvas">당신의 더럽고 역겨운 구식 브라우저가 표준 신문물인 Canvas 기능을 지원하지 않습니다</canvas>
 		</div>
 		<br>
-		<b>Dirty Disgusting Ameba Running-World</b>
-		<div id="cnv">
-			<canvas width="800px" height="600px" id="canvas2" resize="true">당신의 더럽고 역겨운 구식 브라우저가 표준 신문물인 Canvas 기능을 지원하지 않습니다</canvas>
-		</div>
-		<script type="text/javascript" src="/usr/script.js"></script>
-		
-		<link rel="stylesheet" type-"text/css" href="/usr/style.css" />
+		<b>Dirty Disgusting Ameba Running-World
 	</body>
 </html>
