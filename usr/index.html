@@ -187,16 +187,12 @@ function onKeyDown(e) {
 	}
 	if(gamestart) {
 		if (e.key == 'down') {
-			for (var i = 0; i < numBalls-1; i++) {	
-				balls[i].v.angle = 270;
-				balls[i].v.length = 8;
-			}
+			balls[numBalls].v.angle = 270;
+			balls[numBalls].v.length = 8;
 		}
 		if (e.key == 'up') {
-			for (var i = 0; i < numBalls-1; i++) {	
-					balls[i].v.angle = 90;
-					balls[i].v.length = 8;
-				}
+			balls[numBalls].v.angle = 90;
+			balls[numBalls].v.length = 8;
 		}
 	}
 }
