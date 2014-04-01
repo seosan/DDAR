@@ -9,7 +9,7 @@
 		<script src="https://code.jquery.com/color/jquery.color-2.1.0.min.js"></script>
 		<script src="/usr/jcanvas.js"></script>
 		<script type="text/paperscript" canvas="canvas">
-		
+		// code written on MAC
 		var ballspeed = 8;
 			function Ball(r, p, v, a) {
 				this.radius = r;
@@ -45,8 +45,8 @@
 			angle: 360 / this.numSegment * i,
 			length: 1
 		}));
-	}	
-}	
+	}
+}
 
 Ball.prototype = {
 	iterate: function() {
@@ -157,7 +157,7 @@ var bgmain = new Path.Rectangle(0, 0, 800, 600);
 var bgover;
 
 var tm_fl = setInterval(flash, 400);
-	
+
 for (var i = 0; i < numBalls-1; i++) {
 	var position = Point.random() * view.size;
 	var vector = new Point({
@@ -180,7 +180,7 @@ var keydown = false;
 function onKeyUp(e) {
 	keydown = false;
 }
-function onKeyDown(e) {	
+function onKeyDown(e) {
 	if(menustart && !gameover) {
 		if (e.key == 'down' & selectvalue<2) {
 			selectvalue++;
@@ -247,7 +247,7 @@ function onFrame() {
 	for (var i = 0, l = balls.length; i < l; i++) {
 		balls[i].iterate();
 	}
-	
+
 	if(gameover) {
 		if(bgover.opacity<0.8) bgover.opacity += 0.01;
 		console.log(bgover.opacity);
@@ -255,7 +255,7 @@ function onFrame() {
 
 	if (menustart) {
 		console.log("menustart");
-		
+
 		maintext.point = [100, 120-menuslide];
 		menutext[0].point = [550+menuslide, 300];
 		menutext[1].point = [550+menuslide, 350];
@@ -397,6 +397,7 @@ function maingame() {
 
 function overgame() {
 	if (!gameover) {
+		console.log("GAMEOVER");
 		gamestart = false;
 		gameover = true;
 		menuslide = 200;
