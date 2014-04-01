@@ -19,8 +19,10 @@ app.get('/usr/script.js', function(req, res) {
 app.get('/usr/style.css', function(req, res) {
   res.sendfile('/usr/style.css', {root:__dirname});
 });
+app.get('/usr/buggedbit.eot', function(req, res) {
+  res.sendfile('/usr/buggedbit.eot', {root:__dirname});
+});
 var port = Number(process.env.PORT || 5000);
 app.listen(port, function() {
   console.log("Listening on " + port);
 });
-

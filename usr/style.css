@@ -4,3 +4,8 @@
 	position: relative;
 	margin : 0px auto;
 }
+
+@font-face {
+	font-family: 'buggedbit';
+	src: url('/usr/buggedbit.eot');
+}
