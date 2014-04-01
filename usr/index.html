@@ -8,6 +8,16 @@
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 		<script src="https://code.jquery.com/color/jquery.color-2.1.0.min.js"></script>
 		<script src="/usr/jcanvas.js"></script>
+		<script src="http://www.google.com/jsapi"></script>
+<script>
+ google.load( "webfont", "1" );
+ google.setOnLoadCallback(function() {
+  WebFont.load({ custom: {
+   families: [ "buggedbit.eot" ],
+   urls: [ "buggedbit" ]
+  }});
+ });
+</script>
 		<script type="text/paperscript" canvas="canvas">
 		// code written on MAC
 		var ballspeed = 8;
@@ -304,7 +314,7 @@ function mainmenu() {
 			point: [100, 0],
 			content: 'Dirty Disgusting\nAmeba Running-world',
 			fillColor: '#6BEE00',
-			fontFamily: /usr/buggedbit.eot,
+			fontFamily: 'buggedbit',
 			fontSize: '40px',
 			justificaton: 'center'
 		});
@@ -318,7 +328,7 @@ function mainmenu() {
 			point: [550, 300],
 			content: 'Start',
 			fillColor: '#6BEE00',
-			fontFamily: /usr/buggedbit.eot,
+			fontFamily: 'buggedbit',
 			fontSize: '30px',
 			justificaton: 'left'
 		});
@@ -327,7 +337,7 @@ function mainmenu() {
 			point: [550, 350],
 			content: 'Fuck',
 			fillColor: '#6BEE00',
-			fontFamily: /usr/buggedbit.eot,
+			fontFamily: 'buggedbit',
 			fontSize: '30px',
 			justificaton: 'left'
 		});
@@ -336,7 +346,7 @@ function mainmenu() {
 			point: [550, 400],
 			content: 'Shit',
 			fillColor: '#6BEE00',
-			fontFamily: /usr/buggedbit.eot,
+			fontFamily: 'buggedbit',
 			fontSize: '30px',
 			justificaton: 'left'
 		});
@@ -371,7 +381,7 @@ function maingame() {
 			content: 'Score : '+score,
 			fillColor: '#FFFFFF',
 			strokeColor: '#042F00',
-			fontFamily: /usr/buggedbit.eot,
+			fontFamily: 'buggedbit',
 			fontSize: '30px',
 			justificaton: 'left'
 		});
@@ -380,7 +390,7 @@ function maingame() {
 			content: 'Remain : '+press,
 			fillColor: '#FFFFFF',
 			strokeColor: '#042F00',
-			fontFamily: /usr/buggedbit.eot,
+			fontFamily: 'buggedbit',
 			fontSize: '30px',
 			justificaton: 'left'
 		});
@@ -408,7 +418,7 @@ function overgame() {
 			point: [350, 0],
 			content: Math.floor(score),
 			fillColor: '#6BEE00',
-			fontFamily: /usr/buggedbit.eot,
+			fontFamily: 'buggedbit',
 			fontSize: '80px',
 			justificaton: 'center'
 		});
