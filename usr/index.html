@@ -140,11 +140,21 @@ var selectvalue = 0;
 var bgfilter;
 var fl = 0;
 var balls = [];
-var numBalls = 50;
+var numBalls = 20;
 var tm_mainmenu = setInterval(mainmenu, 1500);
+
+var score = 300;
+var scoretext;
+var press = 20;
+var presstext;
+
+var gameover = 0;
+var overscore;
 
 var bgmain = new Path.Rectangle(0, 0, 800, 600);
 	bgmain.fillColor = '#042F00';
+
+var bgover;
 
 var tm_fl = setInterval(flash, 400);
 	
@@ -157,15 +167,21 @@ for (var i = 0; i < numBalls-1; i++) {
 	var radius = Math.random() * 20 + 30;
 	balls.push(new Ball(radius, position, vector, false));
 }
-
+var agl = 0;
+var lgth = 0;
 
 
 
 	function flash() {
 	fl = !fl;
 }
+
+var keydown = false;
+function onKeyUp(e) {
+	keydown = false;
+}
 function onKeyDown(e) {	
-	if(menustart) {
+	if(menustart && !gameover) {
 		if (e.key == 'down' & selectvalue<2) {
 			selectvalue++;
 			clearInterval(tm_fl);
@@ -186,13 +202,38 @@ function onKeyDown(e) {
 		}
 	}
 	if(gamestart) {
-		if (e.key == 'down') {
-			balls[numBalls].v.angle = 270;
-			balls[numBalls].v.length = 8;
-		}
-		if (e.key == 'up') {
-			balls[numBalls].v.angle = 90;
-			balls[numBalls].v.length = 8;
+		if (!keydown) {
+			keydown = true;
+			if (e.key == 'right') {
+				agl = 0;
+				lgth = 3;
+				console.log('right');
+				press--;
+			}
+			if (e.key == 'down') {
+				agl = 90;
+				lgth = 3;
+				console.log('down');
+				press--;
+			}
+			if (e.key == 'left') {
+				agl = 180;
+				lgth = 3;
+				console.log('left');
+				press--;
+			}
+			if (e.key == 'up') {
+				agl = 280;
+				lgth = 3;
+				console.log('up');
+				press--;
+			}
+			console.log('onetime');
+			var pp = new Point({
+					angle: agl,
+					length: lgth
+				});
+				balls[numBalls].vector = pp;
 		}
 	}
 }
@@ -206,22 +247,52 @@ function onFrame() {
 	for (var i = 0, l = balls.length; i < l; i++) {
 		balls[i].iterate();
 	}
-	if(!gamestart) {
-		if (menustart) {
-			console.log("menustart");
-			
-			maintext.point = [100, 120-menuslide];
-			menutext[0].point = [550+menuslide, 300];
-			menutext[1].point = [550+menuslide, 350];
-			menutext[2].point = [550+menuslide, 400];
-			menuselector.position = [510+menuslide, 290+selectvalue*50];
-			menuselector.opacity = fl;
+	
+	if(gameover) {
+		if(bgover.opacity<0.8) bgover.opacity += 0.01;
+		console.log(bgover.opacity);
+	}
 
-			if(menuslide>0) {
-				bgfilter.opacity += menuslide/4000;
-			}
-		}
+	if (menustart) {
+		console.log("menustart");
 		
+		maintext.point = [100, 120-menuslide];
+		menutext[0].point = [550+menuslide, 300];
+		menutext[1].point = [550+menuslide, 350];
+		menutext[2].point = [550+menuslide, 400];
+		menuselector.position = [510+menuslide, 290+selectvalue*50];
+		menuselector.opacity = fl;
+
+		if(menuslide>0) {
+			bgfilter.opacity += menuslide/4000;
+		}
+	}
+
+	if(gamestart){
+		//if gamestarted
+		console.log(balls[numBalls].point.x);
+		if (balls[numBalls].point.x < 290) {
+			for (var i = 0; i < numBalls; i++) {
+				balls[i].point.x += 300-balls[numBalls].point.x;
+			}
+			score += (balls[numBalls].point.x-290)*2;
+			balls[numBalls].point.x = 290;
+		}
+		if (balls[numBalls].point.x > 310) {
+			for (var i = 0; i < numBalls; i++) {
+				balls[i].point.x += 300-balls[numBalls].point.x;
+			}
+			score += balls[numBalls].point.x-310;
+			balls[numBalls].point.x = 310;
+		}
+		if(score<0) overgame();
+		scoretext.content = 'Score : '+Math.floor(score);
+		if(press<0) overgame();
+		else presstext.content = 'Press : '+press;
+	}
+	if(gameover) {
+		if(overscore.point.y < 300) overscore.point.y += 1+overscore.point.y/10;
+
 	}
 }
 function mainmenu() {
@@ -242,7 +313,6 @@ function mainmenu() {
 			size : [20, 20],
 			fillColor: '#6BEE00'
 		});
-
 
 		menutext[0] = new PointText({
 			point: [550, 300],
@@ -277,7 +347,7 @@ function mainmenu() {
 		menustart = 1;
 	}
 	if (menuslide>0) { menuslide -= (menuslide)/10; }
-	if (menuslide<0) { clearInterval(mainmenu); }
+	if (menuslide<1) { clearInterval(mainmenu); }
 }
 function maingame() {
 	if (!gamestart) {
@@ -289,21 +359,62 @@ function maingame() {
 		for (var i = 0; i < numBalls; i++) {
 			var position = Point.random() * view.size;
 			var vector = new Point({
-				angle: 360 * Math.random(),
+				angle: 180,
 				length: Math.random() * 10
 			});
 			var radius = Math.random() * 20 + 30;
-			balls.push(new Ball(radius, position, vector,false));
+			balls.push(new Ball(radius, position, vector, false));
 		}
 
-		var pPosition = new Point(200, 300);
+		scoretext = new PointText({
+			point: [100, 80],
+			content: 'Score : '+score,
+			fillColor: '#FFFFFF',
+			strokeColor: '#042F00',
+			fontFamily: 'buggedbit',
+			fontSize: '30px',
+			justificaton: 'left'
+		});
+		presstext = new PointText({
+			point: [100, 130],
+			content: 'Remain : '+press,
+			fillColor: '#FFFFFF',
+			strokeColor: '#042F00',
+			fontFamily: 'buggedbit',
+			fontSize: '30px',
+			justificaton: 'left'
+		});
+
+		var pPosition = new Point(300, 300);
 		var pVector = new Point({
-			angle: 123,
+			angle: 0,
 			length: 2
 		});
 		var pRadius = 40;
 		balls.push(new Ball(pRadius, pPosition, pVector, true));
 	}
+} //maingame
+
+function overgame() {
+	if (!gameover) {
+		gamestart = false;
+		gameover = true;
+		menuslide = 200;
+		bgover = new Path.Rectangle(0, 0, 800, 600);
+		bgover.fillColor = 'black';
+		bgover.opacity = 0;
+		overscore = new PointText({
+			point: [350, 0],
+			content: Math.floor(score),
+			fillColor: '#6BEE00',
+			fontFamily: 'buggedbit',
+			fontSize: '80px',
+			justificaton: 'center'
+		});
+		setInterval(overgame, 20);
+	}
+	if (menuslide>0) { menuslide -= (menuslide)/10; }
+	if (menuslide<1) { clearInterval(mainmenu); }
 }
 
 		</script>
