@@ -7,5 +7,5 @@
 
 @font-face {
 	font-family: 'buggedbit';
-	src: url('/usr/buggedbit.ttf');
+	src: local('buggedbit'), url('/usr/buggedbit.ttf');
 }
