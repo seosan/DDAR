@@ -133,6 +133,15 @@ Ball.prototype = {
 };
 
 //--------------------- main ---------------------
+var temptext = new PointText({
+	point: [0, 0],
+	content: ' '
+});
+temptext.characterStyle = {
+	fontSize: '40px',
+	font: 'buggedbit',
+	fillColor: '#6BEE00'
+};
 var menustart = 0;
 var gamestart = 0;
 var menuslide = 200;
